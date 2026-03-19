@@ -1,0 +1,6 @@
+@algomate_backend_HostAddress = http://localhost:5270
+
+GET {{algomate_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
