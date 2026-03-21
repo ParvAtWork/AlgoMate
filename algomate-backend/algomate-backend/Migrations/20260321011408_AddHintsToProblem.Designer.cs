@@ -3,6 +3,7 @@ using System;
 using AlgoMateBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace algomate_backend.Migrations
 {
     [DbContext(typeof(AlgoMateDbContext))]
-    partial class AlgoMateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260321011408_AddHintsToProblem")]
+    partial class AddHintsToProblem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -361,9 +364,6 @@ namespace algomate_backend.Migrations
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("text");
 
-                    b.Property<string>("Bio")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -392,9 +392,6 @@ namespace algomate_backend.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasDefaultValue("Student");
-
-                    b.Property<int>("Streak")
-                        .HasColumnType("integer");
 
                     b.Property<string>("SupabaseUid")
                         .IsRequired()
