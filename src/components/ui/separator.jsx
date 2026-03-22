@@ -1,27 +1,36 @@
-"use client"
+// src/components/ui/separator.jsx
+import { motion } from 'framer-motion'
 
-import * as React from "react"
-import { Separator as SeparatorPrimitive } from "radix-ui"
+const Separator = ({
+                     orientation = 'horizontal',
+                     label,
+                     color       = 'rgba(226,232,240,.08)',
+                     animate     = false,
+                     style: extra = {},
+                   }) => {
+  if (orientation === 'vertical') return (
+      <div style={{ width:1, alignSelf:'stretch', background:color, ...extra }}/>
+  )
 
-import { cn } from "@/lib/utils"
+  if (label) return (
+      <div style={{ display:'flex', alignItems:'center', gap:12, ...extra }}>
+        <div style={{ flex:1, height:1, background:color }}/>
+        <span style={{ fontSize:11, color:'rgba(148,163,184,.4)', fontFamily:"'JetBrains Mono',monospace", whiteSpace:'nowrap' }}>
+                {label}
+            </span>
+        <div style={{ flex:1, height:1, background:color }}/>
+      </div>
+  )
 
-function Separator({
-  className,
-  orientation = "horizontal",
-  decorative = true,
-  ...props
-}) {
-  return (
-    <SeparatorPrimitive.Root
-      data-slot="separator"
-      decorative={decorative}
-      orientation={orientation}
-      className={cn(
-        "shrink-0 bg-border data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch",
-        className
-      )}
-      {...props} />
-  );
+  if (animate) return (
+      <motion.div
+          initial={{ scaleX:0 }} animate={{ scaleX:1 }}
+          transition={{ duration:.5, ease:'easeOut' }}
+          style={{ height:1, background:`linear-gradient(90deg,transparent,${color},transparent)`, ...extra }}
+      />
+  )
+
+  return <div style={{ height:1, background:color, ...extra }}/>
 }
 
-export { Separator }
+export default Separator

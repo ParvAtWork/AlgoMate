@@ -1,80 +1,106 @@
-import * as React from "react"
-import { cva } from "class-variance-authority";
-import { Tabs as TabsPrimitive } from "radix-ui"
+// src/components/ui/tabs.jsx
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
-import { cn } from "@/lib/utils"
+const Tabs = ({
+                tabs      = [],
+                defaultTab,
+                onChange,
+                variant   = 'underline',  // underline | pill | card
+                size      = 'md',
+              }) => {
+  const [active, setActive] = useState(defaultTab || tabs[0]?.key)
 
-function Tabs({
-  className,
-  orientation = "horizontal",
-  ...props
-}) {
-  return (
-    <TabsPrimitive.Root
-      data-slot="tabs"
-      data-orientation={orientation}
-      className={cn("group/tabs flex gap-2 data-horizontal:flex-col", className)}
-      {...props} />
-  );
-}
-
-const tabsListVariants = cva(
-  "group/tabs-list inline-flex w-fit items-center justify-center rounded-lg p-[3px] text-muted-foreground group-data-horizontal/tabs:h-8 group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col data-[variant=line]:rounded-none",
-  {
-    variants: {
-      variant: {
-        default: "bg-muted",
-        line: "gap-1 bg-transparent",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
+  const handleChange = (key) => {
+    setActive(key)
+    onChange?.(key)
   }
-)
 
-function TabsList({
-  className,
-  variant = "default",
-  ...props
-}) {
+  const padding = size === 'lg' ? '11px 22px' : size === 'sm' ? '6px 14px' : '9px 18px'
+  const fontSize = size === 'lg' ? 14 : size === 'sm' ? 12 : 13
+
   return (
-    <TabsPrimitive.List
-      data-slot="tabs-list"
-      data-variant={variant}
-      className={cn(tabsListVariants({ variant }), className)}
-      {...props} />
-  );
+      <div>
+        {/* Tab bar */}
+        <div style={{
+          display:'flex', gap: variant === 'pill' ? 6 : 0, position:'relative',
+          borderBottom: variant === 'underline' ? '1px solid rgba(226,232,240,.07)' : 'none',
+          background: variant === 'card' ? 'rgba(226,232,240,.03)' : 'transparent',
+          padding: variant === 'pill' ? '5px' : 0,
+          borderRadius: variant === 'pill' || variant === 'card' ? 10 : 0,
+          flexWrap:'wrap',
+        }}>
+          {tabs.map(tab => {
+            const isActive = active === tab.key
+            return (
+                <motion.div
+                    key={tab.key}
+                    onClick={() => !tab.disabled && handleChange(tab.key)}
+                    whileHover={!tab.disabled ? { opacity:.85 } : {}}
+                    whileTap={!tab.disabled ? { scale:.98 } : {}}
+                    style={{
+                      padding, fontSize, fontWeight:600,
+                      fontFamily:"'Space Grotesk',sans-serif",
+                      cursor: tab.disabled ? 'not-allowed' : 'pointer',
+                      opacity: tab.disabled ? .4 : 1,
+                      position:'relative', userSelect:'none',
+                      display:'flex', alignItems:'center', gap:6,
+                      borderRadius: variant === 'pill' ? 7 : variant === 'card' ? 8 : 0,
+                      color: isActive
+                          ? variant === 'pill' ? '#fff' : '#60a5fa'
+                          : 'rgba(148,163,184,.5)',
+                      background: variant === 'pill' && isActive ? 'linear-gradient(135deg,#60a5fa,#818cf8)' : 'transparent',
+                      borderBottom: variant === 'underline' ? '2px solid transparent' : 'none',
+                      transition: 'color .2s',
+                      whiteSpace:'nowrap',
+                    }}
+                >
+                  {tab.icon}
+                  {tab.label}
+                  {tab.count !== undefined && (
+                      <span style={{ padding:'1px 7px', borderRadius:10, fontSize:10, background: isActive ? 'rgba(96,165,250,.2)' : 'rgba(226,232,240,.08)', color: isActive ? '#60a5fa' : 'rgba(148,163,184,.4)', fontFamily:"'JetBrains Mono',monospace" }}>
+                                    {tab.count}
+                                </span>
+                  )}
+
+                  {/* Underline indicator */}
+                  {variant === 'underline' && isActive && (
+                      <motion.div
+                          layoutId="tab-underline"
+                          style={{ position:'absolute', bottom:-1, left:0, right:0, height:2, background:'#60a5fa', borderRadius:'1px 1px 0 0' }}
+                          transition={{ type:'spring', stiffness:400, damping:30 }}
+                      />
+                  )}
+
+                  {/* Card indicator */}
+                  {variant === 'card' && isActive && (
+                      <motion.div
+                          layoutId="tab-card"
+                          style={{ position:'absolute', inset:0, background:'rgba(96,165,250,.1)', border:'1px solid rgba(96,165,250,.2)', borderRadius:8, zIndex:-1 }}
+                          transition={{ type:'spring', stiffness:400, damping:30 }}
+                      />
+                  )}
+                </motion.div>
+            )
+          })}
+        </div>
+
+        {/* Tab content */}
+        <AnimatePresence mode="wait">
+          {tabs.map(tab => active === tab.key && (
+              <motion.div
+                  key={tab.key}
+                  initial={{ opacity:0, y:6 }}
+                  animate={{ opacity:1, y:0 }}
+                  exit={{ opacity:0, y:-4 }}
+                  transition={{ duration:.2, ease:'easeOut' }}
+              >
+                {tab.content}
+              </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+  )
 }
 
-function TabsTrigger({
-  className,
-  ...props
-}) {
-  return (
-    <TabsPrimitive.Trigger
-      data-slot="tabs-trigger"
-      className={cn(
-        "relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-1.5 py-0.5 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 dark:text-muted-foreground dark:hover:text-foreground group-data-[variant=default]/tabs-list:data-active:shadow-sm group-data-[variant=line]/tabs-list:data-active:shadow-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        "group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent",
-        "data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground",
-        "after:absolute after:bg-foreground after:opacity-0 after:transition-opacity group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100",
-        className
-      )}
-      {...props} />
-  );
-}
-
-function TabsContent({
-  className,
-  ...props
-}) {
-  return (
-    <TabsPrimitive.Content
-      data-slot="tabs-content"
-      className={cn("flex-1 text-sm outline-none", className)}
-      {...props} />
-  );
-}
-
-export { Tabs, TabsList, TabsTrigger, TabsContent, tabsListVariants }
+export default Tabs

@@ -1,23 +1,18 @@
-"use client"
+const Label = ({ children, required = false, htmlFor, hint, style: extra = {} }) => (
+    <div style={{ display:'flex', flexDirection:'column', gap:3, ...extra }}>
+        <label
+            htmlFor={htmlFor}
+            style={{ fontSize:10, fontWeight:700, color:'rgba(148,163,184,.5)', letterSpacing:'.08em', textTransform:'uppercase', fontFamily:"'JetBrains Mono',monospace", display:'flex', alignItems:'center', gap:4 }}
+        >
+            {children}
+            {required && <span style={{color:'#f87171'}}>*</span>}
+        </label>
+        {hint && (
+            <span style={{ fontSize:10, color:'rgba(148,163,184,.35)', fontFamily:"'JetBrains Mono',monospace" }}>
+                {hint}
+            </span>
+        )}
+    </div>
+)
 
-import * as React from "react"
-import { Label as LabelPrimitive } from "radix-ui"
-
-import { cn } from "@/lib/utils"
-
-function Label({
-  className,
-  ...props
-}) {
-  return (
-    <LabelPrimitive.Root
-      data-slot="label"
-      className={cn(
-        "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
-        className
-      )}
-      {...props} />
-  );
-}
-
-export { Label }
+export default Label

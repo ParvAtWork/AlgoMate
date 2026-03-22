@@ -1,114 +1,73 @@
-import * as React from "react"
+// src/components/ui/card.jsx
+import { motion } from 'framer-motion'
 
-import { cn } from "@/lib/utils"
+const Card = ({
+                children,
+                hover    = false,
+                glow     = false,
+                glowColor = '#60a5fa',
+                padding  = '20px 22px',
+                onClick,
+                delay    = 0,
+                animate  = true,
+                style: extraStyle = {},
+              }) => {
+  const base = {
+    background: 'rgba(226,232,240,.03)',
+    border:     '1px solid rgba(226,232,240,.08)',
+    borderRadius: 14,
+    padding,
+    position: 'relative',
+    overflow: 'hidden',
+    cursor: onClick ? 'pointer' : 'default',
+    ...extraStyle,
+  }
 
-function Card({
-  className,
-  size = "default",
-  ...props
-}) {
+  const content = (
+      <>
+        {glow && (
+            <div style={{
+              position:'absolute', top:-40, right:-20, width:120, height:120,
+              borderRadius:'50%', background:`${glowColor}08`,
+              filter:'blur(24px)', pointerEvents:'none',
+            }}/>
+        )}
+        {children}
+      </>
+  )
+
+  if (!animate) return <div style={base} onClick={onClick}>{content}</div>
+
   return (
-    <div
-      data-slot="card"
-      data-size={size}
-      className={cn(
-        "group/card flex flex-col gap-4 overflow-hidden rounded-xl bg-card py-4 text-sm text-card-foreground ring-1 ring-foreground/10 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
-        className
-      )}
-      {...props} />
-  );
+      <motion.div
+          initial={{ opacity:0, y:16 }}
+          animate={{ opacity:1, y:0  }}
+          transition={{ delay, duration:.4, ease:[.22,1,.36,1] }}
+          whileHover={hover || onClick ? { y:-3, borderColor:`${glowColor}25`, boxShadow:`0 8px 28px ${glowColor}0d`, transition:{duration:.2} } : {}}
+          whileTap={onClick ? { scale:.99 } : {}}
+          onClick={onClick}
+          style={base}
+      >
+        {content}
+      </motion.div>
+  )
 }
 
-function CardHeader({
-  className,
-  ...props
-}) {
-  return (
-    <div
-      data-slot="card-header"
-      className={cn(
-        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-4 group-data-[size=sm]/card:px-3 has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3",
-        className
-      )}
-      {...props} />
-  );
-}
+export const CardHeader = ({ title, subtitle, action, icon: Icon, color = '#60a5fa' }) => (
+    <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:16 }}>
+      <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+        {Icon && (
+            <div style={{ width:36, height:36, borderRadius:9, background:`${color}15`, border:`1px solid ${color}25`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+              <Icon size={16} style={{ color }}/>
+            </div>
+        )}
+        <div>
+          <div style={{ fontSize:14, fontWeight:700, color:'#e2e8f0' }}>{title}</div>
+          {subtitle && <div style={{ fontSize:11, color:'rgba(148,163,184,.5)', fontFamily:"'JetBrains Mono',monospace", marginTop:2 }}>{subtitle}</div>}
+        </div>
+      </div>
+      {action}
+    </div>
+)
 
-function CardTitle({
-  className,
-  ...props
-}) {
-  return (
-    <div
-      data-slot="card-title"
-      className={cn(
-        "text-base leading-snug font-medium group-data-[size=sm]/card:text-sm",
-        className
-      )}
-      {...props} />
-  );
-}
-
-function CardDescription({
-  className,
-  ...props
-}) {
-  return (
-    <div
-      data-slot="card-description"
-      className={cn("text-sm text-muted-foreground", className)}
-      {...props} />
-  );
-}
-
-function CardAction({
-  className,
-  ...props
-}) {
-  return (
-    <div
-      data-slot="card-action"
-      className={cn(
-        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
-        className
-      )}
-      {...props} />
-  );
-}
-
-function CardContent({
-  className,
-  ...props
-}) {
-  return (
-    <div
-      data-slot="card-content"
-      className={cn("px-4 group-data-[size=sm]/card:px-3", className)}
-      {...props} />
-  );
-}
-
-function CardFooter({
-  className,
-  ...props
-}) {
-  return (
-    <div
-      data-slot="card-footer"
-      className={cn(
-        "flex items-center rounded-b-xl border-t bg-muted/50 p-4 group-data-[size=sm]/card:p-3",
-        className
-      )}
-      {...props} />
-  );
-}
-
-export {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardAction,
-  CardDescription,
-  CardContent,
-}
+export default Card
