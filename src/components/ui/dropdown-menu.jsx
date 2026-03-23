@@ -71,3 +71,44 @@ const DropdownMenu = ({
 }
 
 export default DropdownMenu
+// Named exports for Navbar compatibility
+export const DropdownMenuTrigger = ({ children, asChild }) => <>{children}</>
+
+export const DropdownMenuContent = ({ children, align = 'end', style }) => (
+    <div style={{
+        position:'absolute', zIndex:300,
+        top:'calc(100% + 6px)',
+        [align === 'end' ? 'right' : 'left']: 0,
+        background:'#0d1117',
+        border:'1px solid rgba(226,232,240,.09)',
+        borderRadius:10, overflow:'hidden',
+        boxShadow:'0 8px 32px rgba(0,0,0,.4)',
+        ...style
+    }}>
+        {children}
+    </div>
+)
+
+export const DropdownMenuItem = ({ children, onClick, style }) => (
+    <div
+        onClick={onClick}
+        style={{
+            display:'flex', alignItems:'center', gap:8,
+            padding:'9px 13px', cursor:'pointer',
+            fontSize:13, color:'rgba(203,213,225,.8)',
+            fontFamily:"'Space Grotesk',sans-serif",
+            transition:'background .15s',
+            ...style
+        }}
+        onMouseEnter={e => e.currentTarget.style.background='rgba(226,232,240,.06)'}
+        onMouseLeave={e => e.currentTarget.style.background='transparent'}
+    >
+        {children}
+    </div>
+)
+
+export const DropdownMenuSeparator = ({ style }) => (
+    <div style={{ height:1, background:'rgba(226,232,240,.07)', margin:'4px 0', ...style }}/>
+)
+
+export { DropdownMenu }

@@ -1,18 +1,17 @@
 // src/components/ui/avatar.jsx
 import { motion } from 'framer-motion'
 
-const Avatar = ({ src, name, size = 36, showStatus = false, status = 'online' }) => {
-    const letter  = name?.[0]?.toUpperCase() || '?'
-    const hue     = name ? [...name].reduce((a,c) => a + c.charCodeAt(0), 0) % 360 : 200
-
+const Avatar = ({ src, name, size = 36, showStatus = false, status = 'online', style, children }) => {
+    const letter = name?.[0]?.toUpperCase() || '?'
+    const hue    = name ? [...name].reduce((a,c) => a + c.charCodeAt(0), 0) % 360 : 200
     const statusColors = { online:'#22c55e', away:'#f59e0b', offline:'rgba(148,163,184,.4)' }
 
     return (
         <motion.div
             whileHover={{ scale:1.08 }}
-            style={{ position:'relative', width:size, height:size, flexShrink:0 }}
+            style={{ position:'relative', width:size, height:size, flexShrink:0, ...style }}
         >
-            {src ? (
+            {children ? children : src ? (
                 <img
                     src={src}
                     alt={name}
@@ -31,7 +30,6 @@ const Avatar = ({ src, name, size = 36, showStatus = false, status = 'online' })
                     {letter}
                 </div>
             )}
-
             {showStatus && (
                 <motion.div
                     initial={{ scale:0 }}
@@ -49,10 +47,26 @@ const Avatar = ({ src, name, size = 36, showStatus = false, status = 'online' })
     )
 }
 
+export const AvatarImage = ({ src, alt, style }) => src
+    ? <img src={src} alt={alt || ''} style={{ width:'100%', height:'100%', borderRadius:'50%', objectFit:'cover', ...style }}/>
+    : null
+
+export const AvatarFallback = ({ children, style }) => (
+    <div style={{
+        width:'100%', height:'100%', borderRadius:'50%',
+        background:'rgba(226,232,240,.08)',
+        display:'flex', alignItems:'center', justifyContent:'center',
+        fontSize:12, fontWeight:700, color:'#e2e8f0',
+        fontFamily:"'JetBrains Mono',monospace",
+        ...style
+    }}>
+        {children}
+    </div>
+)
+
 export const AvatarGroup = ({ users = [], max = 4, size = 32 }) => {
     const visible = users.slice(0, max)
     const extra   = users.length - max
-
     return (
         <div style={{ display:'flex', alignItems:'center' }}>
             {visible.map((u, i) => (

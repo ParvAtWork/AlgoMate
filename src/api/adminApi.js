@@ -1,47 +1,35 @@
 import axiosInstance from './axiosInstance.js'
 
-// GET /api/admin/stats
-export const getDashboardStats = () =>
-    axiosInstance.get('/api/admin/stats')
+// ── Dashboard ────────────────────────────────────────────────────
+export const getDashboardStats      = ()           => axiosInstance.get('/api/admin/stats')
+export const getRecentSubmissions   = (count = 8)  => axiosInstance.get(`/api/admin/submissions/recent?count=${count}`)
 
-// GET /api/admin/users
-export const getAllUsers = () =>
-    axiosInstance.get('/api/admin/users')
+// GET /api/admin/users/{id}/submissions
+export const getUserSubmissions = (id) =>
+    axiosInstance.get(`/api/admin/users/${id}/submissions`)
 
-// PUT /api/admin/users/{id}/role
-export const updateUserRole = (id, role) =>
-    axiosInstance.put(`/api/admin/users/${id}/role`, { role })
-
-// PUT /api/admin/users/{id}/premium
-export const togglePremium = (id, isPremium) =>
-    axiosInstance.put(`/api/admin/users/${id}/premium`, { isPremium })
-
-// DELETE /api/admin/users/{id}
-export const deleteUser = (id) =>
-    axiosInstance.delete(`/api/admin/users/${id}`)
-
-// POST /api/admin/problems
-export const addProblem = (problem) =>
-    axiosInstance.post('/api/admin/problems', problem)
-
-// PUT /api/admin/problems/{id}
-export const updateProblem = (id, problem) =>
-    axiosInstance.put(`/api/admin/problems/${id}`, problem)
-
-// DELETE /api/admin/problems/{id}
-export const deleteProblem = (id) =>
-    axiosInstance.delete(`/api/admin/problems/${id}`)
-
-// GET /api/admin/submissions
-export const getAllSubmissions = () =>
+// GET /api/admin/submissions/all
+export const getAllSubmissionsAdmin = () =>
     axiosInstance.get('/api/admin/submissions')
 
-// GET /api/admin/submissions/recent
-export const getRecentSubmissions = (count = 10) =>
-    axiosInstance.get('/api/admin/submissions/recent', { params: { count } })
+// ── Users ────────────────────────────────────────────────────────
+export const getAllUsers             = ()           => axiosInstance.get('/api/admin/users')
+export const updateUserRole         = (id, role)   => axiosInstance.put(`/api/admin/users/${id}/role`, { role })
+export const togglePremium          = (id, isPremium) => axiosInstance.put(`/api/admin/users/${id}/premium`, { isPremium })
+export const deleteUser             = (id)         => axiosInstance.delete(`/api/admin/users/${id}`)
 
-// POST /api/admin/leaderboard/recalculate
-export const recalculateLeaderboard = (period = 'AllTime') =>
-    axiosInstance.post('/api/admin/leaderboard/recalculate', null, {
-        params: { period }
-    })
+// ── Problems ─────────────────────────────────────────────────────
+export const addProblem             = (data)       => axiosInstance.post('/api/admin/problems', data)
+export const updateProblem          = (id, data)   => axiosInstance.put(`/api/admin/problems/${id}`, data)
+export const deleteProblem          = (id)         => axiosInstance.delete(`/api/admin/problems/${id}`)
+export const getAdminProblemById    = (id)         => axiosInstance.get(`/api/admin/problems/${id}`)
+
+// ── Test Cases ───────────────────────────────────────────────────
+export const getTestCases           = (problemId)  => axiosInstance.get(`/api/admin/problems/${problemId}/testcases`)
+export const addTestCase            = (problemId, data) => axiosInstance.post(`/api/admin/problems/${problemId}/testcases`, data)
+export const updateTestCase         = (id, data)   => axiosInstance.put(`/api/admin/testcases/${id}`, data)
+export const deleteTestCase         = (id)         => axiosInstance.delete(`/api/admin/testcases/${id}`)
+export const deleteAllTestCases     = (problemId)  => axiosInstance.delete(`/api/admin/problems/${problemId}/testcases`)
+
+// ── Leaderboard ──────────────────────────────────────────────────
+export const recalculateLeaderboard = (period = 'AllTime') => axiosInstance.post(`/api/admin/leaderboard/recalculate?period=${period}`)
